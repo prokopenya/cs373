@@ -97,14 +97,31 @@ class robot:
     
     def move(self, motion): # Do not change the name of this function
 
-        # ENTER YOUR CODE HERE
+        alpha, distance = motion
+
+        beta = (float(distance) / self.length) * tan(alpha)
+
+        if abs(beta) < 0.001:
+            new_x = self.x + distance * cos(self.orientation)
+            new_y = self.y + distance * sin(self.orientation)
+            new_orientation = (self.orientation + beta) % (2 * pi)
+        else:
+            radius = distance / beta
+
+            cx = self.x - sin(self.orientation) * radius
+            cy = self.y + cos(self.orientation) * radius
         
+            new_x = cx + sin(self.orientation + beta) * radius
+            new_y = cy - cos(self.orientation + beta) * radius
+            new_orientation = (self.orientation + beta) % (2 * pi)
+
+        result = robot(self.length)
+        result.set(new_x, new_y, new_orientation)
+        result.set_noise(self.bearing_noise, self.steering_noise, self.distance_noise)
+
         return result # make sure your move function returns an instance
                       # of the robot class with the correct coordinates.
                       
     ############## ONLY ADD/MODIFY CODE ABOVE HERE ####################
         
-
-
-
 

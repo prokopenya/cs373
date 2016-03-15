@@ -131,21 +131,62 @@ class robot:
     # --------
     # move: 
     #   
-    
     # copy your code from the previous exercise
     # and modify it so that it simulates motion noise
     # according to the noise parameters
     #           self.steering_noise
     #           self.distance_noise
+    
+    def move(self, motion): # Do not change the name of this function
+
+        alpha = motion[0] + random.gauss(0.0, self.steering_noise)
+        distance = motion[1] + random.gauss(0.0, self.distance_noise)
+
+        beta = (float(distance) / self.length) * tan(alpha)
+
+        if abs(beta) < 0.001:
+            new_x = self.x + distance * cos(self.orientation)
+            new_y = self.y + distance * sin(self.orientation)
+            new_orientation = (self.orientation + beta) % (2 * pi)
+        else:
+            radius = distance / beta
+
+            cx = self.x - sin(self.orientation) * radius
+            cy = self.y + cos(self.orientation) * radius
+
+            new_x = cx + sin(self.orientation + beta) * radius
+            new_y = cy - cos(self.orientation + beta) * radius
+            new_orientation = (self.orientation + beta) % (2 * pi)
+
+        result = robot(self.length)
+        result.set(new_x, new_y, new_orientation)
+        result.set_noise(self.bearing_noise, self.steering_noise, self.distance_noise)
+
+        return result # make sure your move function returns an instance
+                      # of the robot class with the correct coordinates.
 
     # --------
     # sense: 
     #    
-
     # copy your code from the previous exercise
     # and modify it so that it simulates bearing noise
     # according to
     #           self.bearing_noise
+    def sense(self, add_noise=0.0): #do not change the name of this function
+        Z = []
+
+        for ll in landmarks:
+            dx = ll[1] - self.x
+            dy = ll[0] - self.y
+
+            bearing = (atan2(dy, dx) - self.orientation) % (2 * pi)
+
+            if add_noise != 0.0:
+                bearing += random.gauss(0.0, self.bearing_noise)
+
+            Z.append(bearing)
+
+        return Z #Leave this line here. Return vector Z of 4 bearings.
 
     ############## ONLY ADD/MODIFY CODE ABOVE HERE ####################
 
@@ -270,7 +311,4 @@ def particle_filter(motions, measurements, N=500): # I know it's tempting, but d
         p = p3
     
     return get_position(p)
-
-
-
 

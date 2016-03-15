@@ -95,8 +95,12 @@ class robot:
     def sense(self): #do not change the name of this function
         Z = []
 
-        # ENTER CODE HERE
-        # HINT: You will probably need to use the function atan2()
+        for ll in landmarks:
+            dx = ll[1] - self.x
+            dy = ll[0] - self.y
+            bearing = (atan2(dy, dx) - self.orientation) % (2 * pi)    
+
+            Z.append(bearing)
 
         return Z #Leave this line here. Return vector Z of 4 bearings.
     
@@ -117,17 +121,17 @@ class robot:
 ## 1) The following code should print the list [6.004885648174475, 3.7295952571373605, 1.9295669970654687, 0.8519663271732721]
 ##
 ##
-##length = 20.
-##bearing_noise  = 0.0
-##steering_noise = 0.0
-##distance_noise = 0.0
+length = 20.
+bearing_noise  = 0.0
+steering_noise = 0.0
+distance_noise = 0.0
+
+myrobot = robot(length)
+myrobot.set(30.0, 20.0, 0)
+myrobot.set_noise(bearing_noise, steering_noise, distance_noise)
 ##
-##myrobot = robot(length)
-##myrobot.set(30.0, 20.0, 0.0)
-##myrobot.set_noise(bearing_noise, steering_noise, distance_noise)
-##
-##print 'Robot:        ', myrobot
-##print 'Measurements: ', myrobot.sense()
+print 'Robot:        ', myrobot
+print 'Measurements: ', myrobot.sense()
 ##
 
 ## IMPORTANT: You may uncomment the test cases below to test your code.
@@ -158,5 +162,3 @@ class robot:
 ## But when you submit this code, your test cases MUST be commented
 ## out. Our testing program provides its own code for testing your
 ## sense function with randomized initial robot coordinates.
-    
-
