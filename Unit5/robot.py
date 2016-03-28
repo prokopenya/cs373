@@ -1,40 +1,10 @@
-# --------------
-# User Instructions
-#
-# Define a function cte in the robot class that will
-# compute the crosstrack error for a robot on a
-# racetrack with a shape as described in the video.
-#
-# You will need to base your error calculation on
-# the robot's location on the track. Remember that
-# the robot will be traveling to the right on the
-# upper straight segment and to the left on the lower
-# straight segment.
-#
-# --------------
-# Grading Notes
-#
-# We will be testing your cte function directly by
-# calling it with different robot locations and making
-# sure that it returns the correct crosstrack error.
-
 from math import *
 import random
-import sys
 
-
-# ------------------------------------------------
-#
 # this is the robot class
-#
-
 class robot:
-
-    # --------
     # init:
     #    creates robot and initializes location/orientation to 0, 0, 0
-    #
-
     def __init__(self, length = 20.0):
         self.x = 0.0
         self.y = 0.0
@@ -44,42 +14,29 @@ class robot:
         self.distance_noise = 0.0
         self.steering_drift = 0.0
 
-    # --------
     # set:
-    # sets a robot coordinate
-    #
-
+    #    sets a robot coordinate
     def set(self, new_x, new_y, new_orientation):
-
         self.x = float(new_x)
         self.y = float(new_y)
         self.orientation = float(new_orientation) % (2.0 * pi)
 
-
-    # --------
     # set_noise:
-    # sets the noise parameters
-    #
-
+    #    sets the noise parameters
     def set_noise(self, new_s_noise, new_d_noise):
         # makes it possible to change the noise parameters
         # this is often useful in particle filters
         self.steering_noise = float(new_s_noise)
         self.distance_noise = float(new_d_noise)
 
-    # --------
     # set_steering_drift:
-    # sets the systematical steering drift parameter
-    #
-
+    #    sets the systematical steering drift parameter
     def set_steering_drift(self, drift):
         self.steering_drift = drift
 
-    # --------
     # move:
     #    steering = front wheel steering angle, limited by max_steering_angle
     #    distance = total distance driven, most be non-negative
-
     def move(self, steering, distance,
              tolerance = 0.001, max_steering_angle = pi / 4.0):
 
@@ -89,7 +46,6 @@ class robot:
             steering = -max_steering_angle
         if distance < 0.0:
             distance = 0.0
-
 
         # make a new copy
         res = robot()
@@ -109,17 +65,13 @@ class robot:
         turn = tan(steering2) * distance2 / res.length
 
         if abs(turn) < tolerance:
-
             # approximate by straight line motion
-
             res.x = self.x + (distance2 * cos(self.orientation))
             res.y = self.y + (distance2 * sin(self.orientation))
             res.orientation = (self.orientation + turn) % (2.0 * pi)
 
         else:
-
             # approximate bicycle model for motion
-
             radius = distance2 / turn
             cx = self.x - (sin(self.orientation) * radius)
             cy = self.y + (cos(self.orientation) * radius)
@@ -129,31 +81,5 @@ class robot:
 
         return res
 
-
-
-
     def __repr__(self):
         return '[x=%.5f y=%.5f orient=%.5f]'  % (self.x, self.y, self.orientation)
-
-
-############## ONLY ADD / MODIFY CODE BELOW THIS LINE ####################
-
-    def cte(self, radius):
-         #left half-circle
-        if self.x < radius:
-            dst = sqrt((self.x - radius)**2 + (self.y - radius)**2)
-            cte = dst - radius
-        #right half-circle
-        elif self.x > 3 * radius:
-            dst = sqrt((self.x - 3 * radius)**2 + (self.y - radius)**2)
-            cte = dst - radius
-        #going left
-        elif cos(self.orientation) > 0:
-            cte = self.y - 2 * radius
-        #going rights
-        else:
-            cte = -self.y
-
-        return cte
-
-############## ONLY ADD / MODIFY CODE ABOVE THIS LINE ####################

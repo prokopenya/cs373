@@ -3,7 +3,7 @@
 #
 # Here you will be implementing a cyclic smoothing
 # algorithm. This algorithm should not fix the end
-# points (as you did in the unit quizzes). You  
+# points (as you did in the unit quizzes). You
 # should use the gradient descent equations that
 # you used previously.
 #
@@ -15,7 +15,7 @@
 #
 # --------------
 # Testing Instructions
-# 
+#
 # To test your code, call the solution_check function with
 # two arguments. The first argument should be the result of your
 # smooth function. The second should be the corresponding answer.
@@ -29,7 +29,7 @@
 from math import *
 
 # Do not modify path inside your function.
-path=[[0, 0], 
+path=[[0, 0],
       [1, 0],
       [2, 0],
       [3, 0],
@@ -58,21 +58,36 @@ path=[[0, 0],
 
 def smooth(path, weight_data = 0.1, weight_smooth = 0.1, tolerance = 0.00001):
 
-    # 
-    # Enter code here
-    #
-
     # deep copy
     newpath = [[0 for row in range(len(path[0]))] for col in range(len(path))]
     for i in range(len(path)):
         for j in range(len(path[0])):
             newpath[i][j] = path[i][j]
 
+    keep_smoothing = True
+    prev_error = 10**9
+
+    while keep_smoothing:
+        error = 0.0
+        for i in range(len(path)):
+            for j in range(len(path[i])):
+                e1 = weight_data * (path[i][j] - newpath[i][j])
+                newpath[i][j] += e1
+
+                e2 = weight_smooth * (newpath[(i+1)%len(path)][j] + newpath[(i-1)%len(path)][j] - 2 * newpath[i][j])
+                newpath[i][j] += e2
+
+                error += abs(e1 + e2)
+
+        if (prev_error - error) < tolerance:
+            keep_smoothing = False
+        else:
+            prev_error = error
+
+    return newpath
 
 # thank you - EnTerr - for posting this on our discussion forum
 
 #newpath = smooth(path)
 #for i in range(len(path)):
 #    print '['+ ', '.join('%.3f'%x for x in path[i]) +'] -> ['+ ', '.join('%.3f'%x for x in newpath[i]) +']'
-
-

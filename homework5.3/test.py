@@ -30,7 +30,7 @@ class TestSmoothing(unittest.TestCase):
             self.assertAlmostEqual(got[1], expected[1], 3,
                                    "Y coordinate differs for point %d: "
                                    "expected %.3f, got %.3f" % (index, expected[1], got[1]))
-    
+
     def test_videoPath(self):
         path = [[0, 0],
                 [1, 0],
@@ -95,6 +95,3 @@ class TestSmoothing(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
-
